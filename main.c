@@ -1,7 +1,3 @@
-void my_printf(const char* fmt, ...){
-    const char* args[] = __va_args();
-}
-
 #define MAT_IMPLEMENTATION  
 #include "mat.h"
 
