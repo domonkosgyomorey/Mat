@@ -3,7 +3,7 @@
 
 #ifndef MAT_ALLOC
 #include<stdlib.h>
-#define MAT_ALLOC malloc
+#define MAT_CALLOC calloc
 #endif
 
 #ifndef MAT_PRINT
@@ -48,7 +48,6 @@
 
 #define MAT_AT(M, R, C) M.data[(R)*M.col+(C)]
 #define MAT_MAGIC 0x4d4154
-#define MAT_MAGIC_SIZE 4
 
 typedef struct Mat
 {
@@ -63,13 +62,15 @@ Mat mat_mul(Mat a, Mat b);
 Mat mat_add(Mat a, Mat b);
 Mat mat_deserialize(const char* filename);
 void mat_serialize(Mat mat, const char* filename);
+Mat mat_deserialize_ex(void (*read_f)(float*, size_t), void (*read_st)(size_t*, size_t));
+void mat_serialize_ex(Mat mat, void (*write_f)(float*, size_t), void (*write_st)(size_t*, size_t));
 void mat_map(Mat mat, float (*map)(float));
 
 #ifdef MAT_IMPLEMENTATION
 
 Mat mat_alloc(size_t row, size_t col){
-    float *data = MAT_ALLOC(sizeof(float)*row*col);
-    MAT_MEMSET(data, 0, sizeof(float)*col*row);
+    float *data = (float*)MAT_CALLOC(row*col, sizeof(float));
+    MAT_ASSERT(data!=NULL && "Cannot allocate memory for the matrix");
     return (Mat){row, col, data};
 }
 
@@ -91,7 +92,7 @@ void mat_print(Mat mat){
 }
 
 Mat mat_mul(Mat a, Mat b){
-    MAT_ASSERT(a.col==b.row);
+    MAT_ASSERT(a.col==b.row && "Matrix multiplication rule error");
     Mat dest = mat_alloc(a.row, b.col);
     for(size_t i = 0; i < b.col; i++){
         for(size_t j = 0; j < a.row; j++){
@@ -104,7 +105,7 @@ Mat mat_mul(Mat a, Mat b){
 }
 
 Mat mat_add(Mat a, Mat b){
-    MAT_ASSERT(a.row == b.row && a.col == b.col);
+    MAT_ASSERT(a.row == b.row && a.col == b.col && "The first and the second rix shape must be equal");
     Mat dest = mat_alloc(a.row, a.col);
     for(size_t j = 0; j < a.row; j++){
         for(size_t k = 0; k < a.col; k++){
@@ -114,26 +115,44 @@ Mat mat_add(Mat a, Mat b){
     return dest;
 }
 
-void mat_serialize(Mat mat, const char* filename){
-    MAT_FILE_DESC* stream = MAT_FOPEN(filename, "wb");
-    int magic[1] = {MAT_MAGIC};
-    MAT_FWRITE(magic, MAT_MAGIC_SIZE, 1, stream);
-    size_t buff[2] = {mat.row, mat.col};
-    MAT_FWRITE(buff, sizeof(size_t), 2, stream);
-    MAT_FWRITE(mat.data, sizeof(float), mat.row*mat.col, stream);
-    MAT_FCLOSE(stream);
+Mat mat_deserialize(const char* filename){
+    FILE* file = MAT_FOPEN(filename, "rb");
+    size_t magic[1];
+    MAT_FREAD(magic, sizeof(size_t), 1, file);
+    size_t buff[2];
+    MAT_ASSERT(MAT_FREAD(buff, sizeof(size_t), 2, file)==2);
+    Mat mat = mat_alloc(buff[0], buff[1]);
+    MAT_ASSERT(MAT_FREAD(mat.data, sizeof(float), mat.row*mat.col, file)==mat.row*mat.col);
+    MAT_FCLOSE(file);
+    return mat;
 }
 
-Mat mat_deserialize(const char* filename) {
-    MAT_FILE_DESC* stream = MAT_FOPEN(filename, "rb");
-    int magic[1];
-    MAT_ASSERT(MAT_FREAD(magic, MAT_MAGIC_SIZE, 1, stream)==1);
+void mat_serialize(Mat mat, const char* filename){
+    FILE* file = MAT_FOPEN(filename, "wb");
+    size_t magic[1] = {MAT_MAGIC};
+    MAT_FWRITE(magic, sizeof(size_t), 1, file);
+    size_t buff[2] = {mat.row, mat.col};
+    MAT_FWRITE(buff, sizeof(size_t), 2, file);
+    MAT_FWRITE(mat.data, sizeof(float), mat.row*mat.col, file);
+    MAT_FCLOSE(file);
+}
+
+Mat mat_deserialize_ex(void (*read_f)(float*, size_t), void (*read_st)(size_t*, size_t)){
+    size_t magic[1];
+    read_st(magic, sizeof(size_t));
     size_t buff[2];
-    MAT_ASSERT(MAT_FREAD(buff, sizeof(size_t), 2 , stream)==2);
+    read_st(buff, 2);
     Mat mat = mat_alloc(buff[0], buff[1]);
-    MAT_ASSERT(MAT_FREAD(mat.data, sizeof(float), mat.row*mat.col, stream)==mat.row*mat.col);
-    MAT_FCLOSE(stream);
+    read_f(mat.data, mat.row*mat.col);
     return mat;
+}
+
+void mat_serialize_ex(Mat mat, void (*write_f)(float*, size_t), void (*write_st)(size_t*, size_t)){
+    size_t magic[1] = {MAT_MAGIC};
+    write_st(magic, sizeof(size_t));
+    size_t buff[2] = {mat.row, mat.col};
+    write_st(buff, 2);
+    write_f(mat.data, mat.row*mat.col);
 }
 
 void mat_map(Mat mat, float (*map)(float)){
