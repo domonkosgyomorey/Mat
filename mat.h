@@ -1,5 +1,4 @@
-#ifndef MAT_H
-#define MAT_H
+#pragma once
 
 #ifndef MAT_ALLOC
 #include<stdlib.h>
@@ -162,5 +161,3 @@ void mat_map(Mat mat, float (*map)(float)){
 }
 
 #endif // MAT_IMPLEMENTATION
-
-#endif // MAT_H
