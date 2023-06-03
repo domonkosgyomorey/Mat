@@ -11,6 +11,7 @@ BUT, the parameters in your own example printf must need to equal with the origi
 You need to define MAT_PRINT before you include the header.
 ```C
 #define MAT_PRINT my_print_fun
+#define MAT_IMPLEMENTATION
 #include<mat.h>
 ```
 ## Usage for this example

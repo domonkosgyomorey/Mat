@@ -46,7 +46,7 @@
 #define MAT_FCLOSE fclose
 #endif
 
-#define MAT_AT(M, R, C) M.data[R*M.col+C]
+#define MAT_AT(M, R, C) M.data[(R)*M.col+(C)]
 #define MAT_MAGIC 0x4d4154
 #define MAT_MAGIC_SIZE 4
 
