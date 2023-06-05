@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MAT_H
+#define MAT_H
 
 #ifndef MAT_ALLOC
 #include<stdlib.h>
@@ -64,8 +65,6 @@ void mat_serialize(Mat mat, const char* filename);
 Mat mat_deserialize_ex(void (*read_f)(float*, size_t), void (*read_st)(size_t*, size_t));
 void mat_serialize_ex(Mat mat, void (*write_f)(float*, size_t), void (*write_st)(size_t*, size_t));
 void mat_map(Mat mat, float (*map)(float));
-
-#ifdef MAT_IMPLEMENTATION
 
 Mat mat_alloc(size_t row, size_t col){
     float *data = (float*)MAT_CALLOC(row*col, sizeof(float));
@@ -160,4 +159,4 @@ void mat_map(Mat mat, float (*map)(float)){
     }
 }
 
-#endif // MAT_IMPLEMENTATION
+#endif // MAT_H

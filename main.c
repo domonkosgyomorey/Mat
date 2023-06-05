@@ -1,5 +1,4 @@
 #include <stddef.h>
-#define MAT_IMPLEMENTATION  
 #include "mat.h"
 
 float addOne(float val){
