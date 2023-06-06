@@ -1,26 +1,25 @@
-#include <stddef.h>
 #include "mat.h"
 
 float addOne(float val){
     return val+1;
 }
 
-void write_f(float* data, size_t num){
+void write_f(float* data, ll num){
     MAT_PRINT("%p, %zu\n", data, num);
 }
 
-void write_st(size_t* data, size_t num){
+void write_st(ll* data, ll num){
     MAT_PRINT("%p, %zu\n", data, num);
 }
 
-void read_f(float* buff, size_t num){
-    for(size_t i = 0; i < num; i++){
+void read_f(float* buff, ll num){
+    for(ll i = 0; i < num; i++){
         buff[i] = i;
     }
 }
 
-void read_st(size_t* buff, size_t num){
-    for(size_t i = 0; i < num; i++){
+void read_st(ll* buff, ll num){
+    for(ll i = 0; i < num; i++){
         buff[i] = i;
     }
 }
