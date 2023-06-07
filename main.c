@@ -1,48 +1,41 @@
+#define MAT_IMPL
 #include "mat.h"
 
-float addOne(float val){
+double addOne(double val){
     return val+1;
-}
-
-void write_f(float* data, ll num){
-    MAT_PRINT("%p, %zu\n", data, num);
-}
-
-void write_st(ll* data, ll num){
-    MAT_PRINT("%p, %zu\n", data, num);
-}
-
-void read_f(float* buff, ll num){
-    for(ll i = 0; i < num; i++){
-        buff[i] = i;
-    }
-}
-
-void read_st(ll* buff, ll num){
-    for(ll i = 0; i < num; i++){
-        buff[i] = i;
-    }
 }
 
 int main(){
     Mat m = mat_alloc(2, 2);
-    mat_put(m, (float[]){1, 0, 0, 1}, 4);
+    mat_put(m, (double[]){1, 0, 0, 1}, 4);
+    printf("first:\n");
     mat_print(m);
+
     Mat m2 = mat_alloc(2, 3);
-    mat_put(m2, (float[]){1, 0, 0, 0, 1, 0}, 6);
+    mat_put(m2, (double[]){1, 0, 0, 0, 1, 0}, 6);
+    printf("Second:\n");
     mat_print(m2);
-    Mat ans = mat_mul(m, m2);
-    mat_print(ans);
-    Mat add = mat_add(ans, m2);
-    mat_print(add);
-    mat_serialize(add, "ans.mat");
-    Mat des = mat_deserialize("ans.mat");
-    mat_print(des);
-    mat_map(des, addOne);
-    mat_print(des);
     
-    mat_serialize_ex(des, write_f, write_st);
-    Mat new = mat_deserialize_ex(read_f, read_st);
-    mat_print(new);
+    Mat ans = mat_mul(m, m2);
+    printf("First*Second=\n");
+    mat_print(ans);
+    
+    Mat add = mat_add(ans, m2);
+    printf("Prev+Second=\n");
+    mat_print(add);
+    
+    mat_serialize(add, "ans.mat");
+    
+    Mat des = mat_deserialize("ans.mat");
+    printf("Deserialized:\n");
+    mat_print(des);
+
+    mat_map(des, addOne);
+    printf("Mapped:\n");
+    mat_print(des);
+
+    printf("5x5 identity matrix:\n");
+    Mat mat = mat_identity_mat(5);
+    mat_print(mat);
     return 0;
 }
