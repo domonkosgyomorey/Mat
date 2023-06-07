@@ -37,5 +37,9 @@ int main(){
     printf("5x5 identity matrix:\n");
     Mat mat = mat_identity_mat(5);
     mat_print(mat);
+
+    mat_put_col(mat, (double[]){1, 2, 3, 4, 5}, 5, 1);
+    printf("Modified 2nd column in the matrix:\n");
+    mat_print(mat);
     return 0;
 }

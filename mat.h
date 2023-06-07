@@ -65,6 +65,7 @@ typedef struct Mat
 
 Mat mat_alloc(ll row, ll col);
 void mat_put(Mat mat, double* data, ll len);
+void mat_put_col(Mat mat, double* data, ll len, ll col);
 void mat_print(Mat mat);
 Mat mat_identity_mat(ll row);
 Mat mat_mul(Mat a, Mat b);
@@ -85,6 +86,13 @@ void mat_put(Mat mat, double* data, ll len){
     MAT_ASSERT(len==mat.col*mat.row);
     for(ll i = 0; i < len; i++){
         mat.data[i] = data[i];
+    }
+}
+
+void mat_put_col(Mat mat, double* data, ll len, ll col){
+    MAT_ASSERT(mat.row==len && mat.col>col && "The matrix size not enough");
+    for(ll i = 0; i < len; i++){
+        MAT_AT(mat, i, col) = data[i];
     }
 }
 
