@@ -148,13 +148,13 @@ Mat mat_deserialize(const char* filename){
 void mat_serialize(Mat mat, const char* filename){
     FILE* file = MAT_FOPEN(filename, "wb");
     char* magic = MAT_MAGIC;
-    ll writted = MAT_FWRITE(magic, sizeof(char), MAT_MAGIC_LEN, file);
-    MAT_ASSERT(writted==MAT_MAGIC_LEN && "Failed to write into file");
+    ll written = MAT_FWRITE(magic, sizeof(char), MAT_MAGIC_LEN, file);
+    MAT_ASSERT(written==MAT_MAGIC_LEN && "Failed to write into file");
     ll buff[2] = {mat.row, mat.col};
-    writted = MAT_FWRITE(buff, sizeof(ll), 2, file);
-    MAT_ASSERT(writted==2 && "Failed to write into file");
-    writted = MAT_FWRITE(mat.data, sizeof(double), mat.row*mat.col, file);
-    MAT_ASSERT(writted==mat.row*mat.col && "Failed to write into file");
+    written = MAT_FWRITE(buff, sizeof(ll), 2, file);
+    MAT_ASSERT(written==2 && "Failed to write into file");
+    written = MAT_FWRITE(mat.data, sizeof(double), mat.row*mat.col, file);
+    MAT_ASSERT(written==mat.row*mat.col && "Failed to write into file");
     MAT_FCLOSE(file);
 }
 
