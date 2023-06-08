@@ -75,6 +75,7 @@ void mat_serialize(Mat mat, const char* filename);
 void mat_map(Mat mat, double (*map)(double));
 Mat mat_get_submat(Mat mat, ll xpos, ll ypos, ll nrow, ll ncol);
 double mat_det(Mat mat);
+Mat mat_dec_dim(Mat mat, ll del_row_i, ll del_col_i);
 
 #ifdef MAT_IMPL
 
