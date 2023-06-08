@@ -41,5 +41,15 @@ int main(){
     mat_put_col(mat, (double[]){1, 2, 3, 4, 5}, 5, 1);
     printf("Modified 2nd column in the matrix:\n");
     mat_print(mat);
+
+    printf("Id matrix's sub matrix from (0;1) to (1;2):\n");
+    mat_print(mat_get_submat(mat, 0, 1, 2, 2));
+
+    printf("Id matrix dimension decreased:\n");
+    mat_print(mat_dec_dim(mat, 0, 0));
+
+    Mat identity = mat_identity_mat(5);
+    printf("Determinant of id matrix: %lf\n", mat_det(identity));
+
     return 0;
 }

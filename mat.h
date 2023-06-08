@@ -73,6 +73,8 @@ Mat mat_add(Mat a, Mat b);
 Mat mat_deserialize(const char* filename);
 void mat_serialize(Mat mat, const char* filename);
 void mat_map(Mat mat, double (*map)(double));
+Mat mat_get_submat(Mat mat, ll xpos, ll ypos, ll nrow, ll ncol);
+double mat_det(Mat mat);
 
 #ifdef MAT_IMPL
 
@@ -170,6 +172,44 @@ void mat_map(Mat mat, double (*map)(double)){
     for(ll i = 0; i < mat.col*mat.row; i++){
         mat.data[i] = map(mat.data[i]);
     }
+}
+
+Mat mat_get_submat(Mat mat, ll xpos, ll ypos, ll nrow, ll ncol){
+    MAT_ASSERT(nrow+ypos<mat.row&&ncol+xpos<mat.col && "Wrong size parameters");
+    Mat nmat = mat_alloc(nrow, ncol);
+    ll idx = 0;
+    for(ll i = 0; i < nrow; i++){
+        for(ll j = 0; j < ncol; j++){
+           nmat.data[idx++] = MAT_AT(mat, ypos+i, xpos+j); 
+        }
+    }
+    return nmat;
+}
+
+Mat mat_dec_dim(Mat mat, ll del_row_i, ll del_col_i){
+    MAT_ASSERT(mat.row>1&&mat.col>1&&del_row_i<mat.row&&del_col_i<mat.col && "Cannot decrease dimension, cause the current less than 2");
+    Mat nmat = mat_alloc(mat.row-1, mat.col-1);
+    ll idx = 0;
+    for(ll i = 0; i < mat.row; i++){
+        for(ll j = 0; j < mat.col; j++){
+            if(i!=del_row_i&&j!=del_col_i){
+                nmat.data[idx++] = MAT_AT(mat, i, j);
+            }
+        }
+    }
+    return nmat;
+}
+
+double mat_det(Mat mat){
+    MAT_ASSERT(mat.row==mat.col && "Matrix shape must be square");
+    if(mat.row == 2){
+        return mat.data[0]*mat.data[3]-(mat.data[1]*mat.data[2]);
+    }
+    double det = 0;
+    for(ll i = 0; i < mat.col; i++){
+        det+=MAT_AT(mat, 0, i)*mat_det(mat_dec_dim(mat, 0, i))*(i%2==0?1:-1);
+    }
+    return det;  
 }
 
 #endif // MAT_IMPL
